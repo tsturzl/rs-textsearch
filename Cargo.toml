@@ -1,5 +1,7 @@
 [package]
 name = "textsearch"
+description = "Full text search for rust"
+license = "MIT"
 version = "0.0.2"
 authors = ["Travis Sturzl <travissturzl@gmail.com>"]
 
