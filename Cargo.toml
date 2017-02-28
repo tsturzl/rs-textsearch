@@ -1,0 +1,13 @@
+[package]
+name = "textsearch"
+version = "0.0.1"
+authors = ["Travis Sturzl <meatwad12>"]
+
+[dependencies]
+uuid = { version = "0.2", features = ["serde", "v4"] }
+
+[dependencies.natural]
+git = "https://github.com/cjqed/rs-natural"
+
+[dependencies.stem]
+git = "https://github.com/mrordinaire/rust-stem"
