@@ -1,10 +1,8 @@
 //Global Index
-extern crate natural;
-extern crate stem;
 use std::collections::HashMap;
 use std::sync::Arc;
 use std::cmp::Ordering;
-use natural::tokenize::tokenize;
+use tokenize::tokenize;
 use index::Index;
 use document::Document;
 
@@ -42,7 +40,7 @@ impl Global {
 
 	pub fn search(&self, text: &str) -> Vec<(Arc<Document>, f32)>  {
 		let indices = self.indices.clone();
-		let tokens_vec = get_tokenized_and_stemmed(text);
+		let tokens_vec = tokenize(text);
 		let mut tokens: HashMap<String, usize> = HashMap::new();
 
 		for token in tokens_vec.into_iter() {
@@ -94,11 +92,4 @@ impl Global {
 
 		table
 	}
-}
-
-fn get_tokenized_and_stemmed(text: &str) -> Vec<String> {
-  let tokenized_text = tokenize(text);
-  tokenized_text.into_iter()
-                .map(|text| stem::get(text).unwrap())
-                .collect()
 }

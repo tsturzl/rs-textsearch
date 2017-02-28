@@ -1,9 +1,7 @@
 //Document Index, holds an index containing processed text
-extern crate natural;
-extern crate stem;
 use std::collections::HashMap;
 use std::sync::Arc;
-use natural::tokenize::tokenize;
+use tokenize::tokenize;
 use document::Document;
 
 pub struct Index {
@@ -16,7 +14,7 @@ pub struct Index {
 impl Index {
 	pub fn new(corpus: &str) -> Index {
 		let text = corpus.to_owned();
-		let tokens: Vec<String> = get_tokenized_and_stemmed(&text);
+		let tokens: Vec<String> = tokenize(&text);
 		let mut token_hash: HashMap<String, usize> = HashMap::new();
 		let count: usize = tokens.len();
 
@@ -34,11 +32,4 @@ impl Index {
 			id: doc.id.to_owned()
 		}
 	}
-}
-
-fn get_tokenized_and_stemmed(text: &str) -> Vec<String> {
-  let tokenized_text = tokenize(text);
-  tokenized_text.into_iter()
-                .map(|text| stem::get(text).unwrap())
-                .collect()
 }
