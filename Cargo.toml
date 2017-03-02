@@ -2,7 +2,7 @@
 name = "textsearch"
 description = "Full text search for rust"
 license = "MIT"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Travis Sturzl <travissturzl@gmail.com>"]
 
 [badges]
