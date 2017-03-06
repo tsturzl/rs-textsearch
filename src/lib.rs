@@ -1,3 +1,5 @@
+extern crate futures;
+extern crate futures_cpupool;
 extern crate uuid;
 
 pub mod tokenize;

@@ -1,8 +1,10 @@
 extern crate textsearch;
+extern crate futures;
 use std::sync::Arc;
 use std::sync::RwLock;
 use std::sync::RwLockReadGuard;
 use std::sync::RwLockWriteGuard;
+use futures::Future;
 use textsearch::global::Global;
 use textsearch::index::Index;
 use textsearch::document::Document;
@@ -188,18 +190,30 @@ fn create_index_search() {
 	let global: Arc<RwLock<Global>> = search.create_index(NAME).unwrap().clone();
 
 	assert_eq!(global.read().unwrap().name, NAME);
-	assert_eq!(search.indices.len(), 1);
+
+	let indices = search.indices.clone();
+	let indices = indices.read().unwrap();
+
+	assert_eq!(indices.len(), 1);
 }
 
 #[test]
 fn remove_index_search() {
 	let mut search = Search::new();
 
-	search.create_index(NAME);
-	assert_eq!(search.indices.len(), 1);
+	{
+		search.create_index(NAME);
+		let indices = search.indices.clone();
+		let indices = indices.read().unwrap();
+		assert_eq!(indices.len(), 1);
+	}
 
-	search.remove_index(NAME);
-	assert_eq!(search.indices.len(), 0);
+	{
+		search.remove_index(NAME);
+		let indices = search.indices.clone();
+		let indices = indices.read().unwrap();
+		assert_eq!(indices.len(), 0);
+	}
 }
 
 #[test]
@@ -209,8 +223,12 @@ fn insert_document_search() {
 	search.create_index(NAME);
 
 	let DOC_iter = DOCS.into_iter();
-	let docs: Vec<Arc<Document>> = DOC_iter.map(|DOC| search.insert(NAME, DOC).unwrap() ).collect();
-	let global: Arc<RwLock<Global>> = search.indices.get(NAME).unwrap().clone();
+	let docs: Vec<Arc<Document>> = DOC_iter.map(|DOC| search.insert(NAME.to_string(), DOC.to_string()).wait().unwrap() ).collect();
+
+	let indices = search.indices.clone();
+	let indices = indices.read().unwrap();
+
+	let global: Arc<RwLock<Global>> = indices.get(NAME).unwrap().clone();
 	let global_indices: Vec<Arc<Index>> = global.read().unwrap().indices.clone();
 
 	assert_eq!(docs.len(), DOCS.len());
@@ -223,9 +241,9 @@ fn search_search() {
 
 	search.create_index(NAME);
 	let DOC_iter = DOCS.into_iter();
-	let docs: Vec<Arc<Document>> = DOC_iter.map(|DOC| search.insert(NAME, DOC).unwrap() ).collect();
+	let docs: Vec<Arc<Document>> = DOC_iter.map(|DOC| search.insert(NAME.to_string(), DOC.to_string()).wait().unwrap() ).collect();
 
-	let scores: Vec<(Arc<Document>, f32)> = search.search(NAME, "The force surrounds and penetrates us").unwrap();
+	let scores: Vec<(Arc<Document>, f32)> = search.search(NAME.to_string(), "The force surrounds and penetrates us".to_string()).wait().unwrap();
 	let first: Arc<Document> = scores[0].0.clone();
 
 	assert_eq!(first.corpus, DOCS[8].to_string());

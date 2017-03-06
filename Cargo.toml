@@ -10,3 +10,5 @@ travis-ci = { repository = "tsturzl/rs-textsearch", branch = "master" }
 
 [dependencies]
 uuid = { version = "0.2", features = ["serde", "v4"] }
+futures = "0.1.9"
+futures-cpupool = "0.1"

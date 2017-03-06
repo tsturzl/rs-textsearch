@@ -15,7 +15,7 @@ impl Index {
 	pub fn new(corpus: &str) -> Index {
 		let text = corpus.to_owned();
 		let tokens: Vec<String> = tokenize(&text);
-		let mut token_hash: HashMap<String, usize> = HashMap::new();
+		let mut token_hash: HashMap<String, usize> = HashMap::with_capacity(tokens.len());
 		let count: usize = tokens.len();
 
 		for token in tokens.into_iter() {

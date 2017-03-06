@@ -40,8 +40,8 @@ impl Global {
 
 	pub fn search(&self, text: &str) -> Vec<(Arc<Document>, f32)>  {
 		let indices = self.indices.clone();
-		let tokens_vec = tokenize(text);
-		let mut tokens: HashMap<String, usize> = HashMap::new();
+		let tokens_vec: Vec<String> = tokenize(text);
+		let mut tokens: HashMap<String, usize> = HashMap::with_capacity(tokens_vec.len());
 
 		for token in tokens_vec.into_iter() {
 			let entry = tokens.entry(token).or_insert(0);
