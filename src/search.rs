@@ -1,6 +1,4 @@
-extern crate futures;
 extern crate futures_cpupool;
-use futures::Future;
 use futures_cpupool::CpuPool;
 use futures_cpupool::CpuFuture;
 use std::collections::HashMap;
