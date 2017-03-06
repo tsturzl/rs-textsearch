@@ -7,7 +7,6 @@ use std::sync::RwLock;
 use global::Global;
 use document::Document;
 
-#[derive(Clone)]
 pub struct Search {
 	pub indices: Arc<
 		RwLock<
