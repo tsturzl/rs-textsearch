@@ -7,7 +7,6 @@ use std::sync::RwLockWriteGuard;
 use futures::Future;
 use textsearch::global::Global;
 use textsearch::index::Index;
-use textsearch::document::Document;
 use textsearch::search::Search;
 
 static NAME: &'static str = "some index";
@@ -223,7 +222,7 @@ fn insert_document_search() {
 	search.create_index(NAME);
 
 	let DOC_iter = DOCS.into_iter();
-	let docs: Vec<Arc<Document>> = DOC_iter.map(|DOC| search.insert(NAME.to_string(), DOC.to_string()).wait().unwrap() ).collect();
+	let text_indices: Vec<Arc<Index>> = DOC_iter.map(|DOC| search.insert(NAME.to_string(), DOC.to_string()).wait().unwrap() ).collect();
 
 	let indices = search.indices.clone();
 	let indices = indices.read().unwrap();
@@ -231,8 +230,8 @@ fn insert_document_search() {
 	let global: Arc<RwLock<Global>> = indices.get(NAME).unwrap().clone();
 	let global_indices: Vec<Arc<Index>> = global.read().unwrap().indices.clone();
 
-	assert_eq!(docs.len(), DOCS.len());
-	assert_eq!(docs.len(), global_indices.len());
+	assert_eq!(text_indices.len(), DOCS.len());
+	assert_eq!(text_indices.len(), global_indices.len());
 }
 
 #[test]
@@ -241,10 +240,10 @@ fn search_search() {
 
 	search.create_index(NAME);
 	let DOC_iter = DOCS.into_iter();
-	let docs: Vec<Arc<Document>> = DOC_iter.map(|DOC| search.insert(NAME.to_string(), DOC.to_string()).wait().unwrap() ).collect();
+	let indices: Vec<Arc<Index>> = DOC_iter.map(|DOC| search.insert(NAME.to_string(), DOC.to_string()).wait().unwrap() ).collect();
 
-	let scores: Vec<(Arc<Document>, f32)> = search.search(NAME.to_string(), "The force surrounds and penetrates us".to_string()).wait().unwrap();
-	let first: Arc<Document> = scores[0].0.clone();
+	let scores: Vec<(Arc<Index>, f32)> = search.search(NAME.to_string(), "The force surrounds and penetrates us".to_string()).wait().unwrap();
+	let first: Arc<Index> = scores[0].0.clone();
 
-	assert_eq!(first.corpus, DOCS[8].to_string());
+	assert_eq!(first.id, indices[8].id);
 }

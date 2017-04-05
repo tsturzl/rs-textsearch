@@ -2,7 +2,6 @@ extern crate textsearch;
 use std::sync::Arc;
 use textsearch::global::Global;
 use textsearch::index::Index;
-use textsearch::document::Document;
 
 static NAME: &'static str = "some index";
 
@@ -194,13 +193,6 @@ fn insert_global() {
 
   //Ensure all indices are stored in global
   assert_eq!(global.indices.len(), 10);
-  
-  //Ensure indices created correctly
-  for i in 0..9 {
-  	let index = indices[i].clone();
-  	assert_eq!(index.id, index.doc.id);
-  	assert_eq!(index.doc.corpus, DOCS[i]);
-  }
 }
 
 #[test]
@@ -214,8 +206,8 @@ fn search_global() {
 
 	assert_eq!(indices.len(), 10);
 
-	let scores: Vec<(Arc<Document>, f32)> = global.search("Luke is on Tatooine to save Han");
-	let first: Arc<Document> = scores[0].0.clone();
+	let scores: Vec<(Arc<Index>, f32)> = global.search("Luke is on Tatooine to save Han");
+	let first: Arc<Index> = scores[0].0.clone();
 
-	assert_eq!(first.corpus, DOCS[5].to_string());
+	assert_eq!(first.id, indices[5].id);
 }

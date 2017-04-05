@@ -1,6 +1,5 @@
 //Document Index, holds an index containing processed text
 use std::collections::HashMap;
-use std::sync::Arc;
 use uuid::Uuid;
 use tokenize::tokenize;
 
