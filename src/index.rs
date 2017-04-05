@@ -1,13 +1,12 @@
 //Document Index, holds an index containing processed text
 use std::collections::HashMap;
 use std::sync::Arc;
+use uuid::Uuid;
 use tokenize::tokenize;
-use document::Document;
 
 pub struct Index {
 	pub tokens: HashMap<String, usize>,
 	pub word_count: usize,
-	pub doc: Arc<Document>,
 	pub id: String
 }
 
@@ -23,13 +22,10 @@ impl Index {
 			*entry += 1;
 		}
 
-		let doc: Arc<Document> = Arc::new(Document::new(&text));
-
 		Index {
 			tokens: token_hash,
 			word_count: count,
-			doc: doc.clone(),
-			id: doc.id.to_owned()
+			id: Uuid::new_v4().simple().to_string()
 		}
 	}
 }

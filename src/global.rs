@@ -4,7 +4,6 @@ use std::sync::Arc;
 use std::cmp::Ordering;
 use tokenize::tokenize;
 use index::Index;
-use document::Document;
 
 pub struct Global {
 	pub name: String,
@@ -38,7 +37,7 @@ impl Global {
 		index.clone()
 	}
 
-	pub fn search(&self, text: &str) -> Vec<(Arc<Document>, f32)>  {
+	pub fn search(&self, text: &str) -> Vec<(Arc<Index>, f32)>  {
 		let indices = self.indices.clone();
 		let tokens_vec: Vec<String> = tokenize(text);
 		let mut tokens: HashMap<String, usize> = HashMap::with_capacity(tokens_vec.len());
@@ -79,15 +78,15 @@ impl Global {
 		self.finalize(scores)
 	}
 
-	//Helper, returns Document and score in a sorted vector
-	fn finalize(&self, mut scores: Vec<(Arc<Index>, f32)>) -> Vec<(Arc<Document>, f32)> {
+	//Helper, returns a sorted vector
+	fn finalize(&self, mut scores: Vec<(Arc<Index>, f32)>) -> Vec<(Arc<Index>, f32)> {
 		scores.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(Ordering::Equal));
 
-		let mut table: Vec<(Arc<Document>, f32)> = Vec::new();
+		let mut table: Vec<(Arc<Index>, f32)> = Vec::new();
 		for (index, score) in scores.into_iter() {
 			let index = index.clone();
 
-			table.push((index.doc.clone(), score));
+			table.push((index.clone(), score));
 		}
 
 		table

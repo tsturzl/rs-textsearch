@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::sync::RwLock;
 use global::Global;
-use document::Document;
+use index::Index;
 
 pub struct Search {
 	pub indices: Arc<
@@ -60,10 +60,10 @@ impl Search {
 		}
 	}
 
-	pub fn insert(&mut self, name: String, corpus: String) -> CpuFuture<Arc<Document>, String> {
+	pub fn insert(&mut self, name: String, corpus: String) -> CpuFuture<Arc<Index>, String> {
 		let indices = self.indices.clone();
 
-		let future: CpuFuture<Arc<Document>, String> = self.threadpool.spawn_fn(move || {
+		let future: CpuFuture<Arc<Index>, String> = self.threadpool.spawn_fn(move || {
 			let indices = indices.read().unwrap();
 
 			match indices.get(&name) {
@@ -72,12 +72,12 @@ impl Search {
 
 					let mut global = val.write().unwrap();
 					let index = global.insert(&corpus);
-					let res: Result<Arc<Document>, String> = Ok(index.doc.clone());
+					let res: Result<Arc<Index>, String> = Ok(index.clone());
 
 					res
 				},
 				None => {
-					let res: Result<Arc<Document>, String> = Err("Global Index not found.".to_string());
+					let res: Result<Arc<Index>, String> = Err("Global Index not found.".to_string());
 
 					res
 				}
@@ -87,10 +87,10 @@ impl Search {
 		future
 	}
 
-	pub fn search(&self, name: String, text: String) -> CpuFuture<Vec<(Arc<Document>, f32)>, String> {
+	pub fn search(&self, name: String, text: String) -> CpuFuture<Vec<(Arc<Index>, f32)>, String> {
 		let indices = self.indices.clone();
 
-		let future: CpuFuture<Vec<(Arc<Document>, f32)>, String> = self.threadpool.spawn_fn(move || {
+		let future: CpuFuture<Vec<(Arc<Index>, f32)>, String> = self.threadpool.spawn_fn(move || {
 			let indices = indices.read().unwrap();
 
 			match indices.get(&name) {
@@ -98,12 +98,12 @@ impl Search {
 					let val = val.clone();
 
 					let global = val.read().unwrap();
-					let res: Result<Vec<(Arc<Document>, f32)>, String> = Ok(global.search(&text));
+					let res: Result<Vec<(Arc<Index>, f32)>, String> = Ok(global.search(&text));
 
 					res
 				},
 				None => {
-					let res: Result<Vec<(Arc<Document>, f32)>, String> = Err("Global Index not found.".to_string());
+					let res: Result<Vec<(Arc<Index>, f32)>, String> = Err("Global Index not found.".to_string());
 
 					res
 				}
