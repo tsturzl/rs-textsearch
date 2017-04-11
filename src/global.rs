@@ -3,12 +3,12 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use std::cmp::Ordering;
 use tokenize::tokenize;
-use index::Index;
+use text_index::TextIndex;
 
 pub struct Global {
 	pub name: String,
 	pub dictionary: HashMap<String, usize>, //hold count of every index containting a token
-	pub indices: Vec<Arc<Index>>
+	pub indices: Vec<Arc<TextIndex>>
 }
 
 impl Global {
@@ -21,8 +21,8 @@ impl Global {
 	}
 
 	//Insert a corpus, creates an index and stores in indices array and dictionary
-	pub fn insert(&mut self, corpus: &str) -> Arc<Index> {
-		let index: Arc<Index> = Arc::new(Index::new(corpus));
+	pub fn insert(&mut self, corpus: &str) -> Arc<TextIndex> {
+		let index: Arc<TextIndex> = Arc::new(TextIndex::new(corpus));
 		let index_ref = index.clone();
 		let tokens = index.tokens.clone();
 
@@ -37,7 +37,7 @@ impl Global {
 		index.clone()
 	}
 
-	pub fn search(&self, text: &str) -> Vec<(Arc<Index>, f32)>  {
+	pub fn search(&self, text: &str) -> Vec<(Arc<TextIndex>, f32)>  {
 		let indices = self.indices.clone();
 		let tokens_vec: Vec<String> = tokenize(text);
 		let mut tokens: HashMap<String, usize> = HashMap::with_capacity(tokens_vec.len());
@@ -50,7 +50,7 @@ impl Global {
 		let token_ref = &tokens;
 
 		//Score table `(Index, score)`
-		let mut scores: Vec<(Arc<Index>, f32)> = Vec::new();
+		let mut scores: Vec<(Arc<TextIndex>, f32)> = Vec::new();
 
 		for index in indices.into_iter() {
 			let index = index.clone();
@@ -79,7 +79,7 @@ impl Global {
 	}
 
 	//Helper, returns a sorted vector
-	fn finalize(&self, mut scores: Vec<(Arc<Index>, f32)>) -> Vec<(Arc<Index>, f32)> {
+	fn finalize(&self, mut scores: Vec<(Arc<TextIndex>, f32)>) -> Vec<(Arc<Index>, f32)> {
 		scores.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(Ordering::Equal));
 
 		let mut table: Vec<(Arc<Index>, f32)> = Vec::new();

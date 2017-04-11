@@ -3,14 +3,14 @@ use std::collections::HashMap;
 use uuid::Uuid;
 use tokenize::tokenize;
 
-pub struct Index {
+pub struct TextIndex {
 	pub tokens: HashMap<String, usize>,
 	pub word_count: usize,
 	pub id: String
 }
 
-impl Index {
-	pub fn new(corpus: &str) -> Index {
+impl TextIndex {
+	pub fn new(corpus: &str) -> TextIndex {
 		let text = corpus.to_owned();
 		let tokens: Vec<String> = tokenize(&text);
 		let mut token_hash: HashMap<String, usize> = HashMap::with_capacity(tokens.len());
@@ -21,7 +21,7 @@ impl Index {
 			*entry += 1;
 		}
 
-		Index {
+		TextIndex {
 			tokens: token_hash,
 			word_count: count,
 			id: Uuid::new_v4().simple().to_string()

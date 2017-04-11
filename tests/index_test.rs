@@ -4,7 +4,7 @@ TODO:
 */
 
 extern crate textsearch;
-use textsearch::index::Index;
+use textsearch::text_index::Index;
 
 static DOC: &'static str = "Some text to test with";
 

@@ -6,7 +6,7 @@ use std::sync::RwLockReadGuard;
 use std::sync::RwLockWriteGuard;
 use futures::Future;
 use textsearch::global::Global;
-use textsearch::index::Index;
+use textsearch::text_index::Index;
 use textsearch::search::Search;
 
 static NAME: &'static str = "some index";

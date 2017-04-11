@@ -1,7 +1,7 @@
 extern crate textsearch;
 use std::sync::Arc;
 use textsearch::global::Global;
-use textsearch::index::Index;
+use textsearch::text_index::Index;
 
 static NAME: &'static str = "some index";
 
